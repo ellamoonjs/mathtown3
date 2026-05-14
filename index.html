@@ -53,6 +53,7 @@
         .key.del { background: #f44336; color: white; border-color: #c62828; }
         
         .result-content { text-align: center; background: white; color: #333; padding: 30px; border-radius: 20px; width: 90%; max-width: 450px; max-height: 90vh; overflow-y: auto; }
+        #display-id {font-size: 1.3rem; margin-bottom: 15px; display: block;}
         .wrong-list { list-style: none; padding: 15px; margin-bottom: 20px; background: #fff3f3; border: 1px solid #ffcdd2; text-align: left; border-radius: 10px; }
         .ans-user { color: #d32f2f; margin-right: 15px; }
         .ans-correct { color: #1976d2; font-weight: bold; }
@@ -74,7 +75,18 @@
         <input type="tel" id="student-id" class="student-id-input" placeholder="학번 4자리 (예: 1205)" maxlength="4" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 4);">
         <button class="btn-common start-btn" onclick="startGame()">게임 시작</button>
     </div>
-
+<div id="how-to-screen" class="screen" style="display: none; background-color: #fff; z-index: 150; text-align: center; padding: 20px;">
+        <div class="result-content" style="box-shadow: none;">
+            <h2 style="color: #283593;">🎮 게임 방법</h2>
+            <ul style="text-align: left; line-height: 1.8; font-size: 1.1rem; color: #333;">
+                <li>🏃 <b>허들을 넘으세요:</b> 문제를 맞히면 허들을 넘습니다.</li>
+                <li>➗ <b>분수 입력:</b> <span style="color: #d32f2f; font-weight: bold;">/</span> 기호를 사용하여 입력하세요. (예: 1/2)</li>
+                <li>➖ <b>음수 입력:</b> <span style="color: #d32f2f; font-weight: bold;">-</span> 기호를 먼저 누르세요.</li>
+                <li>🔥 <b>콤보 시스템:</b> 연속으로 맞히면 추가 점수가 붙습니다!</li>
+            </ul>
+            <p style="margin-top: 20px; color: #666; font-weight: bold;">3초 후 게임이 시작됩니다...</p>
+        </div>
+    </div>
     <div id="game-screen" class="screen">
         <div class="track"></div>
         <div id="ui-panel">
@@ -105,12 +117,15 @@
             <hr>
             <p style="font-weight:bold; color:#2e7d32; text-align:left;">🏆 내 최근 5회 기록</p>
             <ul id="history-list" class="wrong-list" style="background: #e8f5e9; border-color: #c8e6c9;"></ul>   
-            <p style="font-weight:bold; color:#d32f2f; text-align:left;">📝 마지막 오답</p>
-            <ul id="wrong-list" class="wrong-list"></ul>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+    <p style="font-weight:bold; color:#d32f2f; text-align:left; margin: 0;">📝 마지막 오답</p>
+    <p id="weak-type-display" style="font-size: 0.9rem; color: #7b1fa2; font-weight: bold; margin: 0; background: #f3e5f5; padding: 3px 8px; border-radius: 5px;"></p>
+</div>
+<ul id="wrong-list" class="wrong-list" style="margin-top: 10px;"></ul>
             <div id="submit-area">
                 <button id="submit-btn" class="btn-common submit-btn" onclick="submitToGoogle()">결과 제출하기</button>
             </div>
-            <button class="btn-common restart-btn" onclick="location.reload()">다시 도전하기</button>
+            <button class="btn-common restart-btn" onclick="resetGame()">다시 도전하기</button>
         </div>
     </div>
 
@@ -129,17 +144,14 @@
         function toLatex(str) { if(!str) return "\\square"; if(str.includes('/')) { let p=str.split('/'); let s=p[0].startsWith('-')?"-":""; return `${s}\\frac{${p[0].replace('-','')}}{${p[1]||"\\square"}}`; } return str; }
         function parseFraction(str) { if(!str) return NaN; let p=str.split('/'); return p.length===1?parseFloat(p[0]):parseFloat(p[0])/parseFloat(p[1]); }
 
-        function startGame() { 
+function startGame() { 
             studentId = document.getElementById('student-id').value.trim(); 
             
             let idNum = parseInt(studentId, 10);
             let isValid = false;
-
             if (/^\d{4}$/.test(studentId)) {
-                if ((idNum >= 1101 && idNum <= 1130) ||
-                    (idNum >= 1201 && idNum <= 1230) ||
-                    (idNum >= 1301 && idNum <= 1330) ||
-                    (idNum >= 1401 && idNum <= 1430)) {
+                if ((idNum >= 1101 && idNum <= 1130) || (idNum >= 1201 && idNum <= 1230) ||
+                    (idNum >= 1301 && idNum <= 1330) || (idNum >= 1401 && idNum <= 1430)) {
                     isValid = true;
                 }
             }
@@ -149,9 +161,31 @@
                 document.getElementById('student-id').value = "";
                 return; 
             } 
+            
             localStorage.setItem('h_last_id', studentId);
+            
+            // --- [안내창 로직 추가] ---
+            const isFirstTime = !sessionStorage.getItem('h_played_once'); // 이번 접속에서 처음인지 확인
+
+            if (isFirstTime) {
+                // 처음일 때: 안내창 3초 보여주기
+                document.getElementById('start-screen').style.display = 'none';
+                document.getElementById('how-to-screen').style.display = 'flex';
+                sessionStorage.setItem('h_played_once', 'true'); // 실행 기록 저장 (새로고침 전까지 유지)
+                setTimeout(() => {
+                    document.getElementById('how-to-screen').style.display = 'none';
+                    enterGame();
+                }, 3000); // 3초 대기
+            } else {
+                // 재시작일 때: 바로 시작
+                document.getElementById('start-screen').style.display = 'none';
+                enterGame();
+            }
+        }
+
+        // 실제 게임 화면 진입 및 문제 출제 함수 분리
+        function enterGame() {
             startTime = Date.now(); 
-            document.getElementById('start-screen').style.display = 'none'; 
             document.getElementById('game-screen').style.display = 'flex'; 
             nextQuestion(); 
         }
@@ -242,7 +276,13 @@
 
         function gameOver(isWin) {
             document.getElementById('result-screen').style.display='flex';
-            document.getElementById('display-id').innerText="학번: "+studentId;
+            // 최고 점수를 불러옵니다. (기존 로직 활용)
+let best = parseInt(localStorage.getItem('h_best') || "0");
+if(score > best) best = score; // 이번 판이 최고점이라면 반영
+
+// 학번 옆에 최고 기록을 함께 표시합니다.
+document.getElementById('display-id').innerHTML = 
+    `학번: ${studentId} <span style="margin-left:15px; color:#ef5350;">(최고 기록: ${best}점)</span>`;
             document.getElementById('res-score').innerText=score+"점";
             let sec=((endTime-startTime)/1000).toFixed(1);
             document.getElementById('time-text').innerText=isWin?"🚀 모든 허들 정복! 소요시간: "+sec+"초":"⏱ 소요시간: "+sec+"초";
@@ -282,6 +322,21 @@
             if(wrongLog.length===0) w.innerHTML="<li>오답이 없습니다! 🎉</li>";
             else { let l=wrongLog[wrongLog.length-1]; w.innerHTML=`<li>문제: \\( ${l.problem} \\)<br><span class="ans-user">나의 답: \\( ${toLatex(l.user)} \\)</span><span class="ans-correct">정답: \\( ${toLatex(l.correct)} \\)</span></li>`; }
             MathJax.typesetPromise([w]);
+            // --- [취약 유형 분석 및 화면 표시 추가] ---
+    let weakTypeDisplay = "없음";
+    if (wrongLog.length > 0) {
+        let lastLog = wrongLog[wrongLog.length - 1];
+        let lastProb = lastLog.problem;
+        
+        if (lastProb.includes('^')) weakTypeDisplay = "거듭제곱 혼합계산";
+        else if (lastProb.includes('\\{') || lastProb.includes('\\[')) weakTypeDisplay = "복잡한 괄호 계산";
+        else if (lastProb.includes('\\frac') && (lastProb.includes('\\times') || lastProb.includes('\\div'))) weakTypeDisplay = "유리수 곱셈/나눗셈";
+        else if (lastProb.includes('\\frac') || lastProb.includes('.')) weakTypeDisplay = "유리수 덧셈/뺄셈";
+        else if (lastProb.includes('\\times') || lastProb.includes('\\div')) weakTypeDisplay = "정수 곱셈/나눗셈";
+        else weakTypeDisplay = "정수 덧셈/뺄셈";
+    }
+    
+    document.getElementById('weak-type-display').innerText = "💡 취약 유형: " + weakTypeDisplay;
         }
 
         function submitToGoogle() {
@@ -352,7 +407,18 @@ adjustScreenSize();
             }
         });
         // ------------------------------------   
-
+function resetGame() {
+            // 변수 초기화
+            lv = 1; score = 0; combo = 0; streak = 0; strikes = 0;
+            wrongLog = [];
+            document.body.style.backgroundColor = bgColors[0];
+            
+            // 화면 전환
+            document.getElementById('result-screen').style.display = 'none';
+            // 이미 학번은 저장되어 있으므로 바로 startGame() 호출 (안내창 없이 진행됨)
+            startGame();
+        }
+        
  </script>
 </body>
 </html>
