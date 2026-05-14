@@ -12,7 +12,7 @@
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
     <style>
-        :root { --bg-1: #F0FAFF; --bg-2: #81D4FA; --bg-3: #03A9F4; --bg-4: #FFCC80; --bg-5: #FF8A65; --bg-6: #A9BCF5; }
+        :root { --bg-1: #F0FAFF; --bg-2: #81D4FA; --bg-3: #03A9F4; --bg-4: #FFCC80; --bg-5: #FF8A65; --bg-6: #A9BCF5; --bg-7: #B39DDB; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; font-family: 'Noto Sans KR', sans-serif; overflow: hidden; background-color: var(--bg-1); transition: background-color 1s; }
         
@@ -23,7 +23,6 @@
         
         .title-box { text-align: center; margin-bottom: 30px; }
         .title-box h1 { font-size: 3rem; color: #1a237e; margin: 0; }
-        .input-group { margin-bottom: 30px; text-align: center; }
         .student-id-input { padding: 15px; font-size: 1.2rem; border-radius: 10px; border: 2px solid #1a237e; width: 250px; text-align: center; outline: none; margin-bottom: 20px;}
         
         .btn-common { padding: 15px 40px; font-size: 1.3rem; color: white; border: none; border-radius: 50px; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2); margin: 5px; }
@@ -31,11 +30,55 @@
         .submit-btn { background: #ff9800; }
         .restart-btn { background: #4caf50; }
         
-       .track { position: absolute; bottom: 0; width: 200%; left: -50%; height: 35%; background: #d4a373; border-top: 10px solid #fff; }
+        .track { position: absolute; bottom: 0; width: 200%; left: -50%; height: 35%; background: #d4a373; border-top: 10px solid #fff; }
         #ui-panel { position: absolute; top: 20px; width: 90%; display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: bold; color: #333; z-index: 20; left: 0; right: 0; margin: 0 auto; }
-       .combo-badge { position: absolute; top: 80px; font-size: 2.5rem; color: #ff4081; opacity: 0; transform: scale(0.5); transition: 0.3s; pointer-events: none; text-shadow: 2px 2px white; z-index: 30; width: 100%; left: 0; text-align: center; }
         
-        #hurdle-container { position: relative; width: 570px; height: 250px; margin-bottom: 200px; display: flex; flex-direction: column; align-items: center; }
+        /* 🏁 미니 진행도 스타일 */
+        #progress-bar-container {
+            position: absolute;
+            top: 55px; /* UI 패널 바로 아래 */
+            width: 85%;
+            height: 30px;
+            display: flex;
+            justify-content: space-between; 
+            align-items: flex-end;
+            z-index: 20;
+            left: 0;
+            right: 0;
+            margin: 0 auto;
+            border-bottom: 3px solid #8D6E63; 
+        }
+        .mini-hurdle {
+            width: 4px;
+            height: 12px;
+            background: #333;
+            position: relative;
+        }
+        .mini-hurdle::before { 
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -4px;
+            width: 12px;
+            height: 4px;
+            background: white;
+            border: 1px solid #333;
+            border-radius: 2px;
+        }
+        #runner-icon {
+            position: absolute;
+            font-size: 1.5rem;
+            bottom: 0px;
+            left: calc(0% - 15px); 
+            transition: left 0.5s ease-in-out; 
+            z-index: 21;
+            /* 🚨🚨🚨 요 한 줄이 캐릭터를 좌우로 뒤집어 고정시킵니다 🚨🚨🚨 */
+            transform: scaleX(-1); 
+        }
+
+        .combo-badge { position: absolute; top: 80px; font-size: 2.5rem; color: #ff4081; opacity: 0; transform: scale(0.5); transition: 0.3s; pointer-events: none; text-shadow: 2px 2px white; z-index: 30; width: 100%; left: 0; text-align: center; }
+        
+        #hurdle-container { position: relative; width: 550px; height: 250px; margin-bottom: 200px; display: flex; flex-direction: column; align-items: center; }
         .hurdle-bar { width: 100%; height: 160px; background: #fff; border: 8px solid #333; border-radius: 15px; display: flex; align-items: center; justify-content: center; position: relative; z-index: 2; box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
         .hurdle-leg { width: 15px; height: 100px; background: #333; position: absolute; bottom: -90px; }
         .leg-left { left: 40px; } .leg-right { right: 40px; }
@@ -46,7 +89,7 @@
         .shake { animation: shake 0.4s; }
         
         .input-display { width: 250px; height: 70px; background: #fff; border-radius: 10px; margin-top: 20px; font-size: 2rem; display: flex; align-items: center; justify-content: center; border: 3px solid #1a237e; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 10; }
-       #keypad { position: absolute; bottom: 20px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 95%; max-width: 500px; z-index: 20; left: 0; right: 0; margin: 0 auto; }
+        #keypad { position: absolute; bottom: 20px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 95%; max-width: 500px; z-index: 20; left: 0; right: 0; margin: 0 auto; }
         .key { background: #fff; border: 2px solid #333; border-radius: 10px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #999; transition: transform 0.1s; }
         .key:active { transform: translateY(4px); box-shadow: 0 0 0 #999; }
         .key.enter { background: #4caf50; color: white; border-color: #2e7d32; }
@@ -75,7 +118,8 @@
         <input type="tel" id="student-id" class="student-id-input" placeholder="학번 4자리 (예: 1205)" maxlength="4" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 4);">
         <button class="btn-common start-btn" onclick="startGame()">게임 시작</button>
     </div>
-<div id="how-to-screen" class="screen" style="display: none; background-color: #fff; z-index: 150; text-align: center; padding: 20px;">
+    
+    <div id="how-to-screen" class="screen" style="display: none; background-color: #fff; z-index: 150; text-align: center; padding: 20px;">
         <div class="result-content" style="box-shadow: none;">
             <h2 style="color: #283593;">🎮 게임 방법</h2>
             <ul style="text-align: left; line-height: 1.8; font-size: 1.1rem; color: #333;">
@@ -87,13 +131,26 @@
             <p style="margin-top: 20px; color: #666; font-weight: bold;">3초 후 게임이 시작됩니다...</p>
         </div>
     </div>
+    
     <div id="game-screen" class="screen">
         <div class="track"></div>
         <div id="ui-panel">
-            <div>LEVEL: <span id="lv-text">1</span>/6</div>
+            <div>LEVEL: <span id="lv-text">1</span>/7</div>
             <div>STREAK: <span id="streak-text">0</span>/5</div>
             <div>SCORE: <span id="score-text">0</span></div>
         </div>
+        
+        <div id="progress-bar-container">
+            <div class="mini-hurdle"></div>
+            <div class="mini-hurdle"></div>
+            <div class="mini-hurdle"></div>
+            <div class="mini-hurdle"></div>
+            <div class="mini-hurdle"></div>
+            <div class="mini-hurdle"></div>
+            <div class="mini-hurdle"></div>
+            <div id="runner-icon">🏃‍♂️</div>
+        </div>
+        
         <div id="combo-pop" class="combo-badge">0 COMBO!</div>
         <div id="hurdle-container">
             <div class="hurdle-bar" id="hurdle-bar"><div id="math-problem"></div></div>
@@ -118,10 +175,10 @@
             <p style="font-weight:bold; color:#2e7d32; text-align:left;">🏆 내 최근 5회 기록</p>
             <ul id="history-list" class="wrong-list" style="background: #e8f5e9; border-color: #c8e6c9;"></ul>   
             <div style="display: flex; justify-content: space-between; align-items: center;">
-    <p style="font-weight:bold; color:#d32f2f; text-align:left; margin: 0;">📝 마지막 오답</p>
-    <p id="weak-type-display" style="font-size: 0.9rem; color: #7b1fa2; font-weight: bold; margin: 0; background: #f3e5f5; padding: 3px 8px; border-radius: 5px;"></p>
-</div>
-<ul id="wrong-list" class="wrong-list" style="margin-top: 10px;"></ul>
+                <p style="font-weight:bold; color:#d32f2f; text-align:left; margin: 0;">📝 마지막 오답</p>
+                <p id="weak-type-display" style="font-size: 0.9rem; color: #7b1fa2; font-weight: bold; margin: 0; background: #f3e5f5; padding: 3px 8px; border-radius: 5px;"></p>
+            </div>
+            <ul id="wrong-list" class="wrong-list" style="margin-top: 10px;"></ul>
             <div id="submit-area">
                 <button id="submit-btn" class="btn-common submit-btn" onclick="submitToGoogle()">결과 제출하기</button>
             </div>
@@ -130,13 +187,13 @@
     </div>
 
     <script>
-       // ★ 중요: 여기에 선생님의 웹 앱 URL을 넣으세요!
+        // ★ 중요: 여기에 선생님의 웹 앱 URL을 넣으세요!
         var webAppUrl = "https://script.google.com/macros/s/AKfycbzve0rwt4YiqmMmkcqj961MdtR8jCwlUYrnuX9umWgG0s3cJxTW36YJByP5Ai0RsBpBcw/exec";
 
         let lv = 1, score = 0, combo = 0, streak = 0, strikes = 0;
         let startTime, endTime, currentInput = "", currentAns = "", currentProblemTex = "", studentId = "";
         let wrongLog = [];
-        const bgColors = ['#F0FAFF','#81D4FA','#03A9F4','#FFCC80','#FF8A65','#A9BCF5'];
+        const bgColors = ['#F0FAFF','#81D4FA','#03A9F4','#FFCC80','#FF8A65','#A9BCF5', '#B39DDB']; 
 
         function fmt(n) { return n < 0 ? `(${n})` : `${n}`; }
         function getGCD(a,b) { a=Math.abs(a); b=Math.abs(b); while(b>0) { let t=b; b=a%b; a=t; } return a; }
@@ -144,11 +201,20 @@
         function toLatex(str) { if(!str) return "\\square"; if(str.includes('/')) { let p=str.split('/'); let s=p[0].startsWith('-')?"-":""; return `${s}\\frac{${p[0].replace('-','')}}{${p[1]||"\\square"}}`; } return str; }
         function parseFraction(str) { if(!str) return NaN; let p=str.split('/'); return p.length===1?parseFloat(p[0]):parseFloat(p[0])/parseFloat(p[1]); }
 
+        // 🏃‍♂️ 캐릭터 이동 함수 (100 / 6 으로 7개 구간 나눔)
+        function updateRunnerPosition(level) {
+            let runner = document.getElementById('runner-icon');
+            if(runner) {
+                let percent = (level - 1) * (100 / 6);
+                runner.style.left = `calc(${percent}% - 15px)`;
+            }
+        }
+
         function startGame() { 
             studentId = document.getElementById('student-id').value.trim(); 
-            
             let idNum = parseInt(studentId, 10);
             let isValid = false;
+            
             if (/^\d{4}$/.test(studentId)) {
                 if ((idNum >= 1101 && idNum <= 1130) || (idNum >= 1201 && idNum <= 1230) ||
                     (idNum >= 1301 && idNum <= 1330) || (idNum >= 1401 && idNum <= 1430)) {
@@ -163,34 +229,33 @@
             } 
             
             localStorage.setItem('h_last_id', studentId);
-            
-            // --- [안내창 로직 추가] ---
-            const isFirstTime = !sessionStorage.getItem('h_played_once'); // 이번 접속에서 처음인지 확인
+            const isFirstTime = !sessionStorage.getItem('h_played_once');
 
             if (isFirstTime) {
-                // 처음일 때: 안내창 3초 보여주기
                 document.getElementById('start-screen').style.display = 'none';
                 document.getElementById('how-to-screen').style.display = 'flex';
-                sessionStorage.setItem('h_played_once', 'true'); // 실행 기록 저장 (새로고침 전까지 유지)
+                sessionStorage.setItem('h_played_once', 'true'); 
                 setTimeout(() => {
                     document.getElementById('how-to-screen').style.display = 'none';
                     enterGame();
-                }, 3000); // 3초 대기
+                }, 3000);
             } else {
-                // 재시작일 때: 바로 시작
                 document.getElementById('start-screen').style.display = 'none';
                 enterGame();
             }
         }
 
-        // 실제 게임 화면 진입 및 문제 출제 함수 분리
         function enterGame() {
             startTime = Date.now(); 
             document.getElementById('game-screen').style.display = 'flex'; 
+            
+            // 👇 시작 시 캐릭터 위치 초기화
+            updateRunnerPosition(lv); 
+            
             nextQuestion(); 
         }
         
-        // 🚨 이 부분이 문제였던 press 함수입니다. (수정 완료)
+        // 🚨 press 함수 예외 처리 추가 (기호 중복 방지)
         function press(v) { 
             if (v === 'del') {
                 currentInput = currentInput.slice(0, -1);
@@ -208,7 +273,6 @@
         function nextQuestion() { currentInput=""; renderInput(); strikes=0; document.getElementById('hurdle-bar').style.backgroundColor='white'; document.getElementById('hurdle-bar').classList.remove('shake'); document.getElementById('hurdle-container').classList.remove('hurdle-pass'); generateMath(); }
         function rand(min,max) { return Math.floor(Math.random()*(max-min+1))+min; }
 
-        // 수정한 문제 생성 함수
         function generateMath() {
             let q = "";
             if (lv === 1) {
@@ -247,15 +311,25 @@
                 currentAns = (n1 * n2) + "/" + (d1 * d2);
             } 
             else if (lv === 5) {
+                // 새로운 5단계: 유리수 나눗셈
+                let n1 = rand(-9, 9), d1 = rand(-9, 9); if (d1 === 0) d1 = 7;
+                let n2 = rand(-9, 9), d2 = rand(-9, 9); if (d2 === 0) d2 = 3;
+                if (n2 === 0) n2 = 5; 
+                q = `${fmtFrac(n1, d1)} \\div ${fmtFrac(n2, d2)}`;
+                currentAns = (n1 * d2) + "/" + (d1 * n2);
+            }
+            else if (lv === 6) {
+                // 기존 5단계 (혼합계산) -> 6단계로 이동
                 let n1 = rand(-9, 9), d1 = rand(2, 9), n2 = rand(-2, 2), n3 = rand(-2, 2);
                 if (Math.random() > 0.5) q = `${fmtFrac(n1, d1)} + ${fmt(n2)} \\times ${fmt(n3)}`;
                 else q = `${fmt(n2)} \\times ${fmt(n3)} + ${fmtFrac(n1, d1)}`;
                 currentAns = (n1 + n2 * n3 * d1) + "/" + d1;
             } 
             else {
+                // 기존 6단계 (괄호계산) -> 7단계로 이동
                 let type = rand(1, 3);
                 if (type === 1) {
-                    let a = rand(2, 9), b = rand(1, 9), c = rand(1, 9), n = rand(2, 3), den = rand(2, 9), num = rand(-15, 15);
+                    let a = rand(2, 9), b = rand(1, 9), c = rand(1, 9), n = rand(2, 9), den = rand(2, 9), num = rand(-15, 15);
                     q = `${fmt(a)}^{${n}} - \\left[ ${fmt(b)} - \\left\\{ ${fmt(c)} - ${fmtFrac(num, den)} \\right\\} \\right]`;
                     currentAns = (den * (Math.pow(a, n) - b + c) - num) + "/" + den;
                 }
@@ -269,7 +343,7 @@
                     q = `${fmtFrac(num_a, den)} - \\left\\{ ${fmt(b)} + ${fmt(c)}^{${n}} \\right\\}`;
                     currentAns = (num_a - den * (b + Math.pow(c, n))) + "/" + den;
                 }
-            }0
+            }
             currentProblemTex = q;
             document.getElementById('math-problem').innerHTML = `\\[ ${q} \\]`;
             MathJax.typesetPromise([document.getElementById('math-problem')]);
@@ -278,10 +352,25 @@
         function checkAnswer() {
             if(currentInput==="") return; let uVal=parseFraction(currentInput), aVal=parseFraction(currentAns);
             if(isNaN(uVal)||Math.abs(uVal-aVal)>=0.00001){triggerFail();return;}
-            score+=(lv===6?100:lv*10)+(combo*5); combo++; streak++;
+            score+=(lv===7?100:lv*10)+(combo*5); combo++; streak++; // 7단계로 수정
             if(combo>1){let cb=document.getElementById('combo-pop'); cb.innerText=combo+" COMBO!"; cb.style.opacity="1"; cb.style.transform="scale(1.2)"; setTimeout(()=>{cb.style.opacity="0";},800);}
             document.getElementById('hurdle-container').classList.add('hurdle-pass');
-            setTimeout(()=>{ if(streak>=5){ if(lv<6){lv++;streak=0;document.body.style.backgroundColor=bgColors[lv-1];} else{endTime=Date.now();gameOver(true);return;} } updateUI(); nextQuestion(); }, 400);
+            setTimeout(()=>{ 
+                if(streak>=5){ 
+                    if(lv<7){ // 7단계로 수정
+                        lv++;
+                        streak=0;
+                        document.body.style.backgroundColor=bgColors[lv-1];
+                        
+                        // 👇 레벨업 시 캐릭터 이동!
+                        updateRunnerPosition(lv); 
+                        
+                    } else{
+                        endTime=Date.now();gameOver(true);return;
+                    } 
+                } 
+                updateUI(); nextQuestion(); 
+            }, 400);
         }
 
         function triggerFail() { wrongLog.push({problem:currentProblemTex, user:currentInput, correct:currentAns}); combo=0; streak=0; strikes++; let b=document.getElementById('hurdle-bar'); b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake'); b.style.backgroundColor=strikes===1?'#FFF59D':'#EF9A9A'; if(strikes>=3){endTime=Date.now();gameOver(false);} currentInput=""; renderInput(); updateUI(); }
@@ -409,6 +498,10 @@
             btn.disabled = false;
             
             document.getElementById('result-screen').style.display = 'none';
+            
+            // 👇 캐릭터 위치 초기화
+            updateRunnerPosition(1); 
+            
             startGame();
         }
     </script>
