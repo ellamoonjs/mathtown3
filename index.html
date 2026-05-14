@@ -317,7 +317,6 @@ document.getElementById('display-id').innerHTML =
                 localStorage.setItem('h_best', best); 
                 localStorage.setItem('h_best_time', sec); // 최고 점수일 때의 시간도 저장
             }
-
             let w=document.getElementById('wrong-list');
             if(wrongLog.length===0) w.innerHTML="<li>오답이 없습니다! 🎉</li>";
             else { let l=wrongLog[wrongLog.length-1]; w.innerHTML=`<li>문제: \\( ${l.problem} \\)<br><span class="ans-user">나의 답: \\( ${toLatex(l.user)} \\)</span><span class="ans-correct">정답: \\( ${toLatex(l.correct)} \\)</span></li>`; }
@@ -335,8 +334,8 @@ document.getElementById('display-id').innerHTML =
         else if (lastProb.includes('\\times') || lastProb.includes('\\div')) weakTypeDisplay = "정수 곱셈/나눗셈";
         else weakTypeDisplay = "정수 덧셈/뺄셈";
     }
-    
-    document.getElementById('weak-type-display').innerText = "💡 취약 유형: " + weakTypeDisplay;
+
+document.getElementById('weak-type-display').innerText = "💡 취약 유형: " + weakTypeDisplay;
         }
 
         function submitToGoogle() {
@@ -393,7 +392,6 @@ function adjustScreenSize() {
         screen.style.transform = `translate(-50%, -50%) scale(${scale})`;
     });
 }
-
 // 이벤트 리스너 등록: 창 크기가 바뀔 때, 그리고 처음 로드될 때 실행
 window.addEventListener('resize', adjustScreenSize);
 window.addEventListener('DOMContentLoaded', adjustScreenSize);
@@ -412,7 +410,6 @@ function resetGame() {
             lv = 1; score = 0; combo = 0; streak = 0; strikes = 0;
             wrongLog = [];
             document.body.style.backgroundColor = bgColors[0];
-            
             // 화면 전환
             document.getElementById('result-screen').style.display = 'none';
             // 이미 학번은 저장되어 있으므로 바로 startGame() 호출 (안내창 없이 진행됨)
