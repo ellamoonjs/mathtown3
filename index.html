@@ -623,6 +623,7 @@
             if(gameMode === 'timeattack') weakType = "[TA] " + weakType;
             
             // 1. 파이어베이스 명예의 전당 업데이트
+        if (gameMode === 'hurdle') {    
             let fbRef = db.ref('leaderboard/' + studentId);
             fbRef.once('value').then((snapshot) => {
                 let existingData = snapshot.val();
@@ -634,7 +635,7 @@
                     });
                 }
             });
-
+        }
             // 2. 구글 시트로 전송
             let url = `${webAppUrl}?studentId=${encodeURIComponent(studentId)}&score=${score}&bestScore=${bestScore}&attempts=${attempts}&time=${finalTime}&bestTime=${bestTime}&lastProblem=${encodeURIComponent(lastProblem)}&lastAnswer=${encodeURIComponent(lastAnswer)}&weakType=${encodeURIComponent(weakType)}`;
             
