@@ -1,0 +1,27 @@
+name: Deploy with Secrets
+
+on:
+  push:
+    branches:
+      - main  # 만약 기본 브랜치가 master라면 master로 고쳐주세요.
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 소스코드 가져오기
+        uses: actions/checkout@v4
+
+      - name: 가짜 열쇠를 진짜 열쇠로 바꿔치기
+        run: |
+          sed -i 's/SEC_API_KEY_PLACEHOLDER/${{ secrets.FIREBASE_API_KEY }}/g' index.html
+
+      - name: 안전하게 웹사이트 출판하기 (gh-pages 브랜치)
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
+          publish_branch: gh-pages
