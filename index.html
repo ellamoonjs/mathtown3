@@ -139,7 +139,7 @@
     <div id="ta-select-screen" class="screen" style="display: none;">
         <div class="title-box">
             <h1 style="color: #00897B;">⏱️ 타임어택</h1>
-            <p>3분 동안 약점 집중 공략!</p>
+            <p>2분 동안 약점 집중 공략!</p>
         </div>
         <button class="btn-common ta-cat-btn" onclick="startTimeAttack(1)">1. 정수의 덧셈, 뺄셈</button>
         <button class="btn-common ta-cat-btn" onclick="startTimeAttack(2)">2. 정수의 곱셈, 나눗셈</button>
@@ -168,7 +168,7 @@
             <div id="ui-hurdle-left">LEVEL: <span id="lv-text">1</span>/7</div>
             <div id="ui-hurdle-center">STREAK: <span id="streak-text">0</span>/5</div>
             
-            <div id="ui-ta-left" style="display:none;" class="ta-timer">⏳ <span id="ta-time">03:00</span></div>
+            <div id="ui-ta-left" style="display:none;" class="ta-timer">⏳ <span id="ta-time">02:00</span></div>
             <div id="ui-ta-center" style="display:none;" class="ta-stats">
                 <span class="o">O: <span id="ta-correct-text">0</span></span> | 
                 <span class="x">X: <span id="ta-wrong-text">0</span></span>
@@ -249,7 +249,7 @@
         // ★ 기존 선생님 구글 앱스 스크립트 주소
         var webAppUrl = "https://script.google.com/macros/s/AKfycbzve0rwt4YiqmMmkcqj961MdtR8jCwlUYrnuX9umWgG0s3cJxTW36YJByP5Ai0RsBpBcw/exec";
 
-        let gameMode = 'hurdle', taCategory = 1, taTimeLeft = 180, taTimer = null;
+        let gameMode = 'hurdle', taCategory = 1, taTimeLeft = 120, taTimer = null;
         let taCorrectCount = 0, taWrongCount = 0, lastMilestone = 0;
         const fanfareSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3');
         let lv = 1, score = 0, combo = 0, streak = 0, strikes = 0;
@@ -338,8 +338,8 @@
                 document.getElementById('ui-ta-left').style.display = 'block';
                 document.getElementById('ui-ta-center').style.display = 'block';
                 document.body.style.backgroundColor = 'var(--bg-ta)';
-                taTimeLeft = 180; taCorrectCount = 0; taWrongCount = 0;
-                document.getElementById('ta-time').innerText = "03:00";
+                taTimeLeft = 120; taCorrectCount = 0; taWrongCount = 0;
+                document.getElementById('ta-time').innerText = "02:00";
                 taTimer = setInterval(() => {
                     taTimeLeft--;
                     let m = Math.floor(taTimeLeft / 60).toString().padStart(2, '0');
@@ -472,7 +472,7 @@
 
             if (gameMode === 'timeattack') {
                 if(isCorrect) {
-                    taCorrectCount++; score += 10 + (combo*5); checkMilestone(); combo++;
+                    taCorrectCount++; score += 20 + (combo*10); checkMilestone(); combo++;
                     document.getElementById('hurdle-container').classList.add('hurdle-pass');
                     if(combo>1){let cb=document.getElementById('combo-pop'); cb.innerText=combo+" COMBO!"; cb.style.opacity="1"; cb.style.transform="scale(1.2)"; setTimeout(()=>{cb.style.opacity="0";},800);}
                     setTimeout(()=>{ updateUI(); nextQuestion(); }, 400);
@@ -563,7 +563,7 @@
                 document.getElementById('history-area').style.display = 'none';
                 document.getElementById('res-ta-o').innerText = taCorrectCount + "개";
                 document.getElementById('res-ta-x').innerText = taWrongCount + "개";
-                document.getElementById('time-text').innerText="훈련 종료! (3분 소요)";
+                document.getElementById('time-text').innerText="연습 종료! (2분 소요)";
             }
 
             let attempts = parseInt(localStorage.getItem('h_attempts') || "0") + 1;
@@ -607,7 +607,7 @@
             let btn = document.getElementById('submit-btn');
             btn.innerText = "제출 중..."; btn.disabled = true;
             
-            let finalTime = gameMode === 'timeattack' ? "180.0" : ((endTime - startTime) / 1000).toFixed(1);
+            let finalTime = gameMode === 'timeattack' ? "120.0" : ((endTime - startTime) / 1000).toFixed(1);
             let bestScore = localStorage.getItem('h_best') || score;
             let bestTime = localStorage.getItem('h_best_time') || finalTime;
             let attempts = localStorage.getItem('h_attempts') || 1;
