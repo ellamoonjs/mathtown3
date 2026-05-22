@@ -155,6 +155,18 @@
         @media (max-height: 700px) {
             #ta-hint { top: 120px; font-size: 0.8rem; }
         }
+                /* 메인 화면 저작권 문구 */
+        .copyright-text {
+            position: absolute;
+            bottom: 20px; /* 바닥에서 20px 띄움 */
+            width: 100%;
+            text-align: center;
+            font-size: 0.9rem; /* 한 줄에 들어가는 적당한 크기 */
+            color: #555; /* 너무 진하지 않은 세련된 진회색(검정 계열) */
+            font-weight: bold;
+            pointer-events: none; /* 클릭 방해 금지 */
+        }
+
     </style>
 </head>
 <body>
@@ -169,6 +181,8 @@
         <button class="btn-common start-btn" onclick="checkIdAndProceed('hurdle')">🏃 종합 허들 레이스</button>
         <button class="btn-common ta-btn" onclick="checkIdAndProceed('ta-menu')">⏱️ 타임어택 연습장</button>
         <button class="btn-common" style="background: #FFB300; color: #333;" onclick="openHallOfFame()">🏆 명예의 전당</button>
+        <div class="copyright-text">ⓒ 함평중학교 수학교사(26.5.22.)</div>
+
     </div>
 
     <div id="ta-select-screen" class="screen" style="display: none;">
