@@ -513,7 +513,7 @@
                 else {
                     let type = rand(1, 3);
                     if (type === 1) {
-                        let a = rand(2, 9), b = rand(1, 9), c = rand(1, 9), n = rand(2, 9), den = rand(2, 9), num = rand(-15, 15);
+                        let a = rand(2, 9), b = rand(1, 9), c = rand(1, 9), n = rand(2, 3), den = rand(2, 9), num = rand(-15, 15);
                         q = `${fmt(a)}^{${n}} - \\left[ ${fmt(b)} - \\left\\{ ${fmt(c)} - ${fmtFrac(num, den)} \\right\\} \\right]`;
                         currentAns = (den * (Math.pow(a, n) - b + c) - num) + "/" + den;
                     }
