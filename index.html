@@ -619,6 +619,26 @@
 
         function gameOver(isWin) {
             if(taTimer) clearInterval(taTimer);
+            let bonusText = "";
+            if (gameMode === 'hurdle') {
+                // 1. 7단계 완주(올 클리어) 보너스 (퍼펙트 게임 시 딱 10,000점 완성!)
+                if (isWin) {
+                    score += 475;
+                    bonusText += `<br><span style="font-size: 1.2rem; color: #1976d2;">🌟 7단계 올 클리어! (+475점)</span>`;
+                }
+
+                // 2. 남은 신발 보너스
+                if (totalLives > 0) {
+                    let bonus = totalLives * 1000;
+                    score += bonus;
+                    
+                    if (totalLives === 5 && isWin) { // 한 번도 안 틀리고 끝까지 깬 경우
+                        bonusText += `<br><span style="font-size: 1.2rem; color: #ff9800;">🎉 퍼펙트 게임! 노데스 보너스 (+${bonus}점)</span>`;
+                    } else {
+                        bonusText += `<br><span style="font-size: 1.2rem; color: #4caf50;">👟 남은 신발 보너스 (+${bonus}점)</span>`;
+                    }
+                }
+            }
             document.getElementById('result-screen').style.display='flex';
             
             let best = parseInt(localStorage.getItem('h_best') || "0");
