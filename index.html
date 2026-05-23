@@ -166,6 +166,18 @@
             font-weight: bold;
             pointer-events: none; /* 클릭 방해 금지 */
         }
+                /* 허들 레이스 생명(신발) 표시 */
+        #life-container {
+            position: absolute;
+            top: 20px;
+            right: calc(5% + 90px); /* 🏠 메인 버튼 바로 왼쪽에 위치 */
+            font-size: 1.5rem;
+            z-index: 50;
+            letter-spacing: 2px; /* 신발 사이 간격 띄우기 */
+        }
+        @media (max-height: 700px) {
+            #life-container { top: 15px; font-size: 1.2rem; right: calc(5% + 80px); }
+        }
 
     </style>
 </head>
@@ -210,6 +222,7 @@
     </div>
     
     <div id="game-screen" class="screen">
+        <div id="life-container"></div>
         <button class="exit-btn" onclick="resetGame()">🏠 메인</button>
         <div id="correct-effect"></div>
         <div class="track"></div>
@@ -330,7 +343,18 @@
                 effect.classList.remove('show-correct');
             }, 200); // 0.4초 뒤에 초록색 원 숨김
         }
-        let lv = 1, score = 0, combo = 0, streak = 0, strikes = 0;
+                let lv = 1, score = 0, combo = 0, streak = 0, strikes = 0, totalLives = 5; // totalLives 추가
+
+        //👇 신발 개수를 화면에 그려주는 함수 추가 👇 //
+        function updateLivesUI() {
+            let lifeStr = "";
+            for(let i=0; i<totalLives; i++) {
+                lifeStr += "👟";
+            }
+            let container = document.getElementById('life-container');
+            if(container) container.innerText = lifeStr;
+        }
+
         let startTime, endTime, currentInput = "", currentAns = "", currentProblemTex = "", studentId = "";
         let wrongLog = [];
         const bgColors = ['#F0FAFF','#81D4FA','#03A9F4','#FFCC80','#FF8A65','#A9BCF5', '#B39DDB']; 
@@ -407,6 +431,24 @@
                 document.getElementById('progress-bar-container').style.display = 'flex';
                 document.getElementById('ui-ta-left').style.display = 'none';
                 document.getElementById('ui-ta-center').style.display = 'none';
+                 // 👇 허들 모드 시작 시 신발 5개 채우고 보여주기
+                totalLives = 5;
+                updateLivesUI();
+                document.getElementById('life-container').style.display = 'block';
+                
+                document.body.style.backgroundColor = bgColors[0];
+                updateRunnerPosition(lv); 
+            } else { 
+                document.getElementById('ui-hurdle-left').style.display = 'none';
+                document.getElementById('ui-hurdle-center').style.display = 'none';
+                document.getElementById('progress-bar-container').style.display = 'none';
+                document.getElementById('ui-ta-left').style.display = 'block';
+                document.getElementById('ui-ta-center').style.display = 'block';
+                
+                // 👇 타임어택 모드일 때는 신발 숨기기
+                document.getElementById('life-container').style.display = 'none';
+                
+                document.body.style.backgroundColor = 'var(--bg-ta)';
                 document.body.style.backgroundColor = bgColors[0];
                 updateRunnerPosition(lv); 
             } else { 
@@ -593,11 +635,17 @@
 
         function triggerFail() { 
             wrongLog.push({problem:currentProblemTex, user:currentInput, correct:currentAns}); 
-            combo=0; streak=0; strikes++; 
+            combo=0; streak=0; strikes++;
+            totalLives--; 
+            updateLivesUI();
             let b=document.getElementById('hurdle-bar'); 
             b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake'); 
             b.style.backgroundColor=strikes===1?'#FFF59D':'#EF9A9A'; 
-            if(strikes>=3){endTime=Date.now();gameOver(false);} 
+            if(strikes >= 3 || totalLives <= 0){
+                endTime = Date.now(); 
+                gameOver(false); 
+                return; 
+            } 
             currentInput=""; renderInput(); updateUI(); 
         }
 
@@ -810,7 +858,7 @@
      
         function resetGame() {
             if(taTimer) { clearInterval(taTimer); taTimer = null; }
-            lv = 1; score = 0; combo = 0; streak = 0; strikes = 0;lastMilestone = 0;
+            lv = 1; score = 0; combo = 0; streak = 0; strikes = 0;totalLives = 5;lastMilestone = 0;
             wrongLog = [];
             
             let btn = document.getElementById('submit-btn');
