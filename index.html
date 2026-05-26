@@ -632,7 +632,7 @@
                     let bonus = totalLives * 1000;
                     score += bonus;
                     
-                    if (totalLives === 5 && isWin) { // 한 번도 안 틀리고 끝까지 깬 경우
+                    if (isWin && totalLives === 5) { // 한 번도 안 틀리고 끝까지 깬 경우
                         bonusText += `<br><span style="font-size: 1.2rem; color: #ff9800;">🎉 퍼펙트 게임! 노데스 보너스 (+${bonus}점)</span>`;
                     } else {
                         bonusText += `<br><span style="font-size: 1.2rem; color: #4caf50;">👟 남은 신발 보너스 (+${bonus}점)</span>`;
